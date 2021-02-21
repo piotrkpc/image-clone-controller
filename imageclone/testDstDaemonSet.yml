@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name:  busybox-daemonset
+spec:
+  selector:
+    matchLabels:
+      app: busybox
+  template:
+    spec:
+      containers:
+        - name: busybox
+          image: docker.io/piotrkpcbackup/busybox:latest

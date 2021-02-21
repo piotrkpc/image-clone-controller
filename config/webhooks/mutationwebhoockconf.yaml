@@ -1,0 +1,62 @@
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  namespace: image-clone-controller
+  name: image-clone-controller
+  labels:
+    app: image-clone-controller
+  annotations:
+    cert-manager.io/inject-ca-from: image-clone-controller/serving-cert
+webhooks:
+  - name: image-clone-controller.deployments.svc.cluster.local
+    clientConfig:
+      service:
+        name: image-clone-controller
+        namespace: image-clone-controller
+        path: "/imageclone-v1-deployment"
+        port: 443
+    rules:
+      - operations: ["CREATE", "UPDATE"]
+        apiGroups: ["apps"]
+        apiVersions: ["v1"]
+        resources: ["deployments"]
+    sideEffects: None
+    timeoutSeconds: 5
+    reinvocationPolicy: Never
+    failurePolicy: Ignore
+    namespaceSelector:
+      matchLabels:
+        image-clone-controller: enabled
+    admissionReviewVersions: ["v1", "v1beta1"]
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  namespace: image-clone-controller
+  name: image-clone-controller-daemonset
+  labels:
+    app: image-clone-controller-daemonset
+  annotations:
+    cert-manager.io/inject-ca-from: image-clone-controller/serving-cert
+webhooks:
+  - name: image-clone-controller.daemonses.svc.cluster.local
+    clientConfig:
+      service:
+        name: image-clone-controller
+        namespace: image-clone-controller
+        path: "/imageclone-v1-daemonset"
+        port: 443
+    rules:
+      - operations: ["CREATE", "UPDATE"]
+        apiGroups: ["apps"]
+        apiVersions: ["v1"]
+        resources: ["daemonsets"]
+    sideEffects: None
+    timeoutSeconds: 5
+    reinvocationPolicy: Never
+    failurePolicy: Ignore
+    namespaceSelector:
+      matchLabels:
+        image-clone-controller: enabled
+    admissionReviewVersions: ["v1", "v1beta1"]
